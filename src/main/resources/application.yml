@@ -4,16 +4,16 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb+srv://felipe123:F2025password898@cluster0.gaodo1w.mongodb.net/expensesdb?retryWrites=true&w=majority
-      database: expensesdb
+      uri: ${MONGODB_URI}
+      database: ${MONGODB_DATABASE:expensesdb}
 
   security:
     oauth2:
       client:
         registration:
           google:
-            client-id: your-google-client-id
-            client-secret: your-google-client-secret
+            client-id: ${GOOGLE_CLIENT_ID:your-google-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret}
 
 server:
   port: ${PORT:8080}

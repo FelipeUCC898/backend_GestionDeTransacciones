@@ -59,7 +59,6 @@ Swagger UI:
 ### 💻 Frontend
 **Vercel**  
 URL pública:  
-👉 *(Agrega aquí la URL que Vercel te generó, por ejemplo)*  
-[https://frontend-expenses.vercel.app](https://frontend-expenses.vercel.app)
+👉 *(https://expenses-frontend-negvyqiok-felipengs-projects.vercel.app/reports)*  
 
 ---

@@ -5,6 +5,7 @@ import com.expenses.app.model.Transaccion;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
+import java.time.Instant;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,4 +19,7 @@ public interface TransaccionRepository extends MongoRepository<Transaccion, Stri
     // Consultas agregadas para reportes
     @Query(value = "{ 'userId': ?0, 'tipoTransaccion': ?1 }", fields = "{ 'monto': 1 }")
     List<Transaccion> findMontosByUserIdAndTipoTransaccion(String userId, TipoTransaccion tipoTransaccion);
+    
+    // Consulta para filtrar por rango de fechas
+    List<Transaccion> findByUserIdAndFechaBetween(String userId, Instant fechaInicio, Instant fechaFin);
 }

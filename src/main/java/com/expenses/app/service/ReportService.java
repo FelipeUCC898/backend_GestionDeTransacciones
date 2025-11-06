@@ -6,6 +6,7 @@ import com.expenses.app.model.Transaccion;
 import com.expenses.app.repository.TransaccionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.time.Instant;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,8 +20,14 @@ public class ReportService {
     private final TransaccionRepository transaccionRepository;
     private final CategoriaService categoriaService;
     
-    public ReportDTO.SummaryResponse getSummary(String userId) {
-        List<Transaccion> transacciones = transaccionRepository.findByUserId(userId);
+    public ReportDTO.SummaryResponse getSummary(String userId, Instant fechaInicio, Instant fechaFin) {
+        List<Transaccion> transacciones;
+        
+        if (fechaInicio != null && fechaFin != null) {
+            transacciones = transaccionRepository.findByUserIdAndFechaBetween(userId, fechaInicio, fechaFin);
+        } else {
+            transacciones = transaccionRepository.findByUserId(userId);
+        }
         
         Double totalIngresos = transacciones.stream()
                 .filter(t -> t.getTipoTransaccion() == TipoTransaccion.INGRESO)
@@ -36,8 +43,15 @@ public class ReportService {
             totalIngresos,
             totalGastos,
             totalIngresos - totalGastos,
-            (long) transacciones.size()
+            (long) transacciones.size(),
+            fechaInicio,
+            fechaFin
         );
+    }
+    
+    // Método sobrecargado para mantener compatibilidad con el anterior
+    public ReportDTO.SummaryResponse getSummary(String userId) {
+        return getSummary(userId, null, null);
     }
     
     public ReportDTO.ByCategoryResponse getByCategory(String userId) {

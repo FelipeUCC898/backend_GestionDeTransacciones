@@ -2,6 +2,7 @@ package com.expenses.app.service;
 
 import com.expenses.app.dto.ReportDTO;
 import com.expenses.app.model.TipoTransaccion;
+import com.expenses.app.model.Transaccion;
 import com.expenses.app.repository.TransaccionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,49 +15,65 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ReportService {
-
+    
     private final TransaccionRepository transaccionRepository;
-
-    public ReportDTO.SummaryResponse getSummary(Integer userId) {
-        Double totalIngresos = transaccionRepository.sumMontoByUserIdAndTipoTransaccion(userId,
-                TipoTransaccion.INGRESO);
-        Double totalGastos = transaccionRepository.sumMontoByUserIdAndTipoTransaccion(userId, TipoTransaccion.GASTO);
-        Long totalTransacciones = (long) transaccionRepository.findByUserId(userId).size();
-
+    private final CategoriaService categoriaService;
+    
+    public ReportDTO.SummaryResponse getSummary(String userId) {
+        List<Transaccion> transacciones = transaccionRepository.findByUserId(userId);
+        
+        Double totalIngresos = transacciones.stream()
+                .filter(t -> t.getTipoTransaccion() == TipoTransaccion.INGRESO)
+                .mapToDouble(Transaccion::getMonto)
+                .sum();
+        
+        Double totalGastos = transacciones.stream()
+                .filter(t -> t.getTipoTransaccion() == TipoTransaccion.GASTO)
+                .mapToDouble(Transaccion::getMonto)
+                .sum();
+        
         return new ReportDTO.SummaryResponse(
-                totalIngresos != null ? totalIngresos : 0.0,
-                totalGastos != null ? totalGastos : 0.0,
-                (totalIngresos != null ? totalIngresos : 0.0) - (totalGastos != null ? totalGastos : 0.0),
-                totalTransacciones);
+            totalIngresos,
+            totalGastos,
+            totalIngresos - totalGastos,
+            (long) transacciones.size()
+        );
     }
-
-    public ReportDTO.ByCategoryResponse getByCategory(Integer userId) {
-        List<Object[]> resumenData = transaccionRepository.getResumenPorCategoria(userId);
-
-        List<ReportDTO.CategorySummary> resumenPorCategoria = resumenData.stream()
-                .map(data -> new ReportDTO.CategorySummary(
-                        (String) data[0],
-                        (Double) data[1],
-                        (Double) data[2],
-                        ((Double) data[1] - (Double) data[2])))
-                .collect(Collectors.toList());
-
-        Map<String, Double> gastosPorCategoria = new HashMap<>();
-        Map<String, Double> ingresosPorCategoria = new HashMap<>();
-
-        for (Object[] data : resumenData) {
-            String categoria = (String) data[0];
-            Double ingresos = (Double) data[1];
-            Double gastos = (Double) data[2];
-
-            if (ingresos > 0) {
-                ingresosPorCategoria.put(categoria, ingresos);
+    
+    public ReportDTO.ByCategoryResponse getByCategory(String userId) {
+        List<Transaccion> transacciones = transaccionRepository.findByUserId(userId);
+        
+        // Agrupar por categoría
+        Map<String, ReportDTO.CategorySummary> summaryMap = new HashMap<>();
+        
+        for (Transaccion transaccion : transacciones) {
+            String categoriaNombre = categoriaService.findByIdAndUserId(transaccion.getCategoriaId(), userId)
+                    .getNombre();
+            
+            ReportDTO.CategorySummary summary = summaryMap.getOrDefault(categoriaNombre, 
+                new ReportDTO.CategorySummary(categoriaNombre, 0.0, 0.0, 0.0));
+            
+            if (transaccion.getTipoTransaccion() == TipoTransaccion.INGRESO) {
+                summary.setTotalIngresos(summary.getTotalIngresos() + transaccion.getMonto());
+            } else {
+                summary.setTotalGastos(summary.getTotalGastos() + transaccion.getMonto());
             }
-            if (gastos > 0) {
-                gastosPorCategoria.put(categoria, gastos);
-            }
+            
+            summary.setBalance(summary.getTotalIngresos() - summary.getTotalGastos());
+            summaryMap.put(categoriaNombre, summary);
         }
-
+        
+        List<ReportDTO.CategorySummary> resumenPorCategoria = summaryMap.values().stream()
+                .collect(Collectors.toList());
+        
+        Map<String, Double> gastosPorCategoria = summaryMap.entrySet().stream()
+                .filter(entry -> entry.getValue().getTotalGastos() > 0)
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getTotalGastos()));
+        
+        Map<String, Double> ingresosPorCategoria = summaryMap.entrySet().stream()
+                .filter(entry -> entry.getValue().getTotalIngresos() > 0)
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getTotalIngresos()));
+        
         return new ReportDTO.ByCategoryResponse(resumenPorCategoria, gastosPorCategoria, ingresosPorCategoria);
     }
 }

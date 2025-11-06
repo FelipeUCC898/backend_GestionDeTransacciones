@@ -18,14 +18,14 @@ public class ReportController {
     
     @GetMapping("/user/{userId}/summary")
     @Operation(summary = "Obtener resumen financiero del usuario")
-    public ResponseEntity<ReportDTO.SummaryResponse> getSummary(@PathVariable Integer userId) {
+    public ResponseEntity<ReportDTO.SummaryResponse> getSummary(@PathVariable String userId) {
         ReportDTO.SummaryResponse summary = reportService.getSummary(userId);
         return ResponseEntity.ok(summary);
     }
     
     @GetMapping("/user/{userId}/by-category")
     @Operation(summary = "Obtener reporte de transacciones por categoría")
-    public ResponseEntity<ReportDTO.ByCategoryResponse> getByCategory(@PathVariable Integer userId) {
+    public ResponseEntity<ReportDTO.ByCategoryResponse> getByCategory(@PathVariable String userId) {
         ReportDTO.ByCategoryResponse report = reportService.getByCategory(userId);
         return ResponseEntity.ok(report);
     }

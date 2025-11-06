@@ -54,7 +54,7 @@ public class AuthController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener información del usuario")
-    public ResponseEntity<AuthDTO.UserResponse> getUser(@PathVariable Integer id) {
+    public ResponseEntity<AuthDTO.UserResponse> getUser(@PathVariable String id) {
         User user = userService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         return ResponseEntity.ok(userService.toUserResponse(user));

@@ -1,69 +1,52 @@
 package com.expenses.app.model;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
-@Entity
-@Table(name = "transacciones")
+@Document(collection = "transacciones")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Transaccion {
-
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_transaccion", nullable = false)
+    private String id;
+    
+    @NotNull
     private TipoTransaccion tipoTransaccion;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoria_id", nullable = false)
-    private Categoria categoria;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
+    
+    // Referencias por ID en MongoDB
+    private String categoriaId;
+    private String userId;
+    
     @NotBlank
     @Size(min = 2, max = 255)
-    @Column(nullable = false)
+    @Size(min = 2, max = 255)
     private String descripcion;
-
-    @Column(nullable = false)
-    private LocalDateTime fecha;
-
+    
+    @NotNull
+    private Instant fecha;
+    
     @NotNull
     @Positive
-    @Column(nullable = false)
     private Double monto;
+    
+    @CreatedDate
+    private Instant createdAt;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @LastModifiedDate
+    private Instant updatedAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-        if (fecha == null) {
-            fecha = LocalDateTime.now();
-        }
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+    // Si fecha no se provee, la lógica de asignación se puede manejar en el servicio antes de persistir
 }

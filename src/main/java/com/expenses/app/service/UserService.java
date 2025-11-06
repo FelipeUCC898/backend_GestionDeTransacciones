@@ -48,7 +48,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findByCorreo(correo);
     }
     
-    public Optional<User> findById(Integer id) {
+    public Optional<User> findById(String id) {
         return userRepository.findById(id);
     }
     

@@ -26,14 +26,14 @@ public class CategoriaDTO {
     }
     
     public static class Response {
-        private Integer id;
+           private String id;
         private String nombre;
-        private Integer userId;
+           private String userId;
         private String userApodo;
         
         public Response() {}
         
-        public Response(Integer id, String nombre, Integer userId, String userApodo) {
+           public Response(String id, String nombre, String userId, String userApodo) {
             this.id = id;
             this.nombre = nombre;
             this.userId = userId;
@@ -41,12 +41,12 @@ public class CategoriaDTO {
         }
         
         // Getters y Setters
-        public Integer getId() { return id; }
-        public void setId(Integer id) { this.id = id; }
+           public String getId() { return id; }
+           public void setId(String id) { this.id = id; }
         public String getNombre() { return nombre; }
         public void setNombre(String nombre) { this.nombre = nombre; }
-        public Integer getUserId() { return userId; }
-        public void setUserId(Integer userId) { this.userId = userId; }
+           public String getUserId() { return userId; }
+           public void setUserId(String userId) { this.userId = userId; }
         public String getUserApodo() { return userApodo; }
         public void setUserApodo(String userApodo) { this.userApodo = userApodo; }
     }

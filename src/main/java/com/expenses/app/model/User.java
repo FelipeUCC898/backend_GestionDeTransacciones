@@ -1,6 +1,8 @@
 package com.expenses.app.model;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -8,55 +10,44 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "users")
+@Document(collection = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;
     
     @NotBlank
     @Size(min = 2, max = 50)
-    @Column(nullable = false)
     private String apodo;
     
     @NotBlank
     @Email
-    @Column(unique = true, nullable = false)
+    @Indexed(unique = true)
     private String correo;
     
     @NotBlank
     @Size(min = 6)
-    @Column(nullable = false)
     private String contraseña;
     
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @CreatedDate
+    private Instant createdAt;
+
+    @LastModifiedDate
+    private Instant updatedAt;
     
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    // En MongoDB, podemos tener referencias o documentos embebidos
+    // Para simplicidad, usaremos referencias por ID
+    private List<String> categoriaIds = new ArrayList<>();
+    private List<String> transaccionIds = new ArrayList<>();
     
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Categoria> categorias;
-    
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Transaccion> transacciones;
-    
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-    
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+    // Auditoría manejada por Spring Data MongoDB (@CreatedDate / @LastModifiedDate)
 }

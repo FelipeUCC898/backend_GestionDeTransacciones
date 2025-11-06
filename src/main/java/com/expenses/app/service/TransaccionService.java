@@ -22,46 +22,46 @@ public class TransaccionService {
     private final UserService userService;
     private final CategoriaService categoriaService;
     
-    public Transaccion createTransaccion(TransaccionDTO.CreateRequest request, Integer userId) {
+    public Transaccion createTransaccion(TransaccionDTO.CreateRequest request, String userId) {
         User user = userService.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         
-        Categoria categoria = categoriaService.findByIdAndUserId(request.getCategoriaId(), userId);
-        
-        Transaccion transaccion = new Transaccion();
-        transaccion.setTipoTransaccion(request.getTipoTransaccion());
-        transaccion.setCategoria(categoria);
-        transaccion.setUser(user);
-        transaccion.setDescripcion(request.getDescripcion());
-        transaccion.setFecha(request.getFecha() != null ? request.getFecha() : java.time.LocalDateTime.now());
-        transaccion.setMonto(request.getMonto());
+    Categoria categoria = categoriaService.findByIdAndUserId(request.getCategoriaId(), userId);
+
+    Transaccion transaccion = new Transaccion();
+    transaccion.setTipoTransaccion(request.getTipoTransaccion());
+    transaccion.setCategoriaId(categoria.getId());
+    transaccion.setUserId(user.getId());
+    transaccion.setDescripcion(request.getDescripcion());
+    transaccion.setFecha(request.getFecha() != null ? request.getFecha() : java.time.Instant.now());
+    transaccion.setMonto(request.getMonto());
         
         return transaccionRepository.save(transaccion);
     }
     
     @Transactional(readOnly = true)
-    public List<TransaccionDTO.Response> getTransaccionesByUser(Integer userId) {
+    public List<TransaccionDTO.Response> getTransaccionesByUser(String userId) {
         return transaccionRepository.findByUserId(userId).stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
     
-    public Transaccion updateTransaccion(Integer id, TransaccionDTO.UpdateRequest request, Integer userId) {
+    public Transaccion updateTransaccion(String id, TransaccionDTO.UpdateRequest request, String userId) {
         Transaccion transaccion = transaccionRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new RuntimeException("Transacción no encontrada"));
         
-        Categoria categoria = categoriaService.findByIdAndUserId(request.getCategoriaId(), userId);
-        
-        transaccion.setTipoTransaccion(request.getTipoTransaccion());
-        transaccion.setCategoria(categoria);
-        transaccion.setDescripcion(request.getDescripcion());
-        transaccion.setFecha(request.getFecha() != null ? request.getFecha() : transaccion.getFecha());
-        transaccion.setMonto(request.getMonto());
+    Categoria categoria = categoriaService.findByIdAndUserId(request.getCategoriaId(), userId);
+
+    transaccion.setTipoTransaccion(request.getTipoTransaccion());
+    transaccion.setCategoriaId(categoria.getId());
+    transaccion.setDescripcion(request.getDescripcion());
+    transaccion.setFecha(request.getFecha() != null ? request.getFecha() : transaccion.getFecha());
+    transaccion.setMonto(request.getMonto());
         
         return transaccionRepository.save(transaccion);
     }
     
-    public void deleteTransaccion(Integer id, Integer userId) {
+    public void deleteTransaccion(String id, String userId) {
         Transaccion transaccion = transaccionRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new RuntimeException("Transacción no encontrada"));
         transaccionRepository.delete(transaccion);
@@ -71,24 +71,24 @@ public class TransaccionService {
     public TransaccionDTO.Response toResponse(Transaccion transaccion) {
         // Obtener nombre de categoría de manera segura
         String categoriaNombre = categoriaService.findByIdAndUserId(
-            transaccion.getCategoria().getId(), 
-            transaccion.getUser().getId()
+            transaccion.getCategoriaId(),
+            transaccion.getUserId()
         ).getNombre();
-        
+
         // Obtener apodo de usuario de manera segura
-        String userApodo = userService.findById(transaccion.getUser().getId())
+        String userApodo = userService.findById(transaccion.getUserId())
                 .map(User::getApodo)
                 .orElse("Usuario no disponible");
-        
+
         return new TransaccionDTO.Response(
             transaccion.getId(),
             transaccion.getTipoTransaccion(),
             categoriaNombre,
-            transaccion.getCategoria().getId(),
+            transaccion.getCategoriaId(),
             transaccion.getDescripcion(),
             transaccion.getFecha(),
             transaccion.getMonto(),
-            transaccion.getUser().getId(),
+            transaccion.getUserId(),
             userApodo
         );
     }

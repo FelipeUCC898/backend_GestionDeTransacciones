@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public class TransaccionDTO {
     
@@ -14,13 +14,13 @@ public class TransaccionDTO {
         private TipoTransaccion tipoTransaccion;
         
         @NotNull
-        private Integer categoriaId;
+            private String categoriaId;
         
         @NotBlank
         @Size(min = 2, max = 255)
         private String descripcion;
         
-        private LocalDateTime fecha;
+    private Instant fecha;
         
         @NotNull
         @Positive
@@ -29,12 +29,12 @@ public class TransaccionDTO {
         // Getters y Setters
         public TipoTransaccion getTipoTransaccion() { return tipoTransaccion; }
         public void setTipoTransaccion(TipoTransaccion tipoTransaccion) { this.tipoTransaccion = tipoTransaccion; }
-        public Integer getCategoriaId() { return categoriaId; }
-        public void setCategoriaId(Integer categoriaId) { this.categoriaId = categoriaId; }
+            public String getCategoriaId() { return categoriaId; }
+            public void setCategoriaId(String categoriaId) { this.categoriaId = categoriaId; }
         public String getDescripcion() { return descripcion; }
         public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-        public LocalDateTime getFecha() { return fecha; }
-        public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
+    public Instant getFecha() { return fecha; }
+    public void setFecha(Instant fecha) { this.fecha = fecha; }
         public Double getMonto() { return monto; }
         public void setMonto(Double monto) { this.monto = monto; }
     }
@@ -44,13 +44,13 @@ public class TransaccionDTO {
         private TipoTransaccion tipoTransaccion;
         
         @NotNull
-        private Integer categoriaId;
+            private String categoriaId;
         
         @NotBlank
         @Size(min = 2, max = 255)
         private String descripcion;
         
-        private LocalDateTime fecha;
+    private Instant fecha;
         
         @NotNull
         @Positive
@@ -59,32 +59,32 @@ public class TransaccionDTO {
         // Getters y Setters
         public TipoTransaccion getTipoTransaccion() { return tipoTransaccion; }
         public void setTipoTransaccion(TipoTransaccion tipoTransaccion) { this.tipoTransaccion = tipoTransaccion; }
-        public Integer getCategoriaId() { return categoriaId; }
-        public void setCategoriaId(Integer categoriaId) { this.categoriaId = categoriaId; }
+            public String getCategoriaId() { return categoriaId; }
+            public void setCategoriaId(String categoriaId) { this.categoriaId = categoriaId; }
         public String getDescripcion() { return descripcion; }
         public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-        public LocalDateTime getFecha() { return fecha; }
-        public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
+    public Instant getFecha() { return fecha; }
+    public void setFecha(Instant fecha) { this.fecha = fecha; }
         public Double getMonto() { return monto; }
         public void setMonto(Double monto) { this.monto = monto; }
     }
     
     public static class Response {
-        private Integer id;
+            private String id;
         private TipoTransaccion tipoTransaccion;
         private String categoriaNombre;
-        private Integer categoriaId;
+            private String categoriaId;
         private String descripcion;
-        private LocalDateTime fecha;
+    private Instant fecha;
         private Double monto;
-        private Integer userId;
+            private String userId;
         private String userApodo;
         
-        public Response() {}
+    public Response() {}
         
-        public Response(Integer id, TipoTransaccion tipoTransaccion, String categoriaNombre, 
-                       Integer categoriaId, String descripcion, LocalDateTime fecha, 
-                       Double monto, Integer userId, String userApodo) {
+        public Response(String id, TipoTransaccion tipoTransaccion, String categoriaNombre, 
+                   String categoriaId, String descripcion, Instant fecha, 
+                   Double monto, String userId, String userApodo) {
             this.id = id;
             this.tipoTransaccion = tipoTransaccion;
             this.categoriaNombre = categoriaNombre;
@@ -97,22 +97,22 @@ public class TransaccionDTO {
         }
         
         // Getters y Setters
-        public Integer getId() { return id; }
-        public void setId(Integer id) { this.id = id; }
+            public String getId() { return id; }
+            public void setId(String id) { this.id = id; }
         public TipoTransaccion getTipoTransaccion() { return tipoTransaccion; }
         public void setTipoTransaccion(TipoTransaccion tipoTransaccion) { this.tipoTransaccion = tipoTransaccion; }
         public String getCategoriaNombre() { return categoriaNombre; }
         public void setCategoriaNombre(String categoriaNombre) { this.categoriaNombre = categoriaNombre; }
-        public Integer getCategoriaId() { return categoriaId; }
-        public void setCategoriaId(Integer categoriaId) { this.categoriaId = categoriaId; }
+            public String getCategoriaId() { return categoriaId; }
+            public void setCategoriaId(String categoriaId) { this.categoriaId = categoriaId; }
         public String getDescripcion() { return descripcion; }
         public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-        public LocalDateTime getFecha() { return fecha; }
-        public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
+    public Instant getFecha() { return fecha; }
+    public void setFecha(Instant fecha) { this.fecha = fecha; }
         public Double getMonto() { return monto; }
         public void setMonto(Double monto) { this.monto = monto; }
-        public Integer getUserId() { return userId; }
-        public void setUserId(Integer userId) { this.userId = userId; }
+            public String getUserId() { return userId; }
+            public void setUserId(String userId) { this.userId = userId; }
         public String getUserApodo() { return userApodo; }
         public void setUserApodo(String userApodo) { this.userApodo = userApodo; }
     }

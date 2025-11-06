@@ -24,14 +24,14 @@ public class TransaccionController {
     @Operation(summary = "Crear nueva transacción")
     public ResponseEntity<TransaccionDTO.Response> createTransaccion(
             @Valid @RequestBody TransaccionDTO.CreateRequest request,
-            @RequestHeader("User-Id") Integer userId) {
+            @RequestHeader("User-Id") String userId) {
         Transaccion transaccion = transaccionService.createTransaccion(request, userId);
         return ResponseEntity.ok(transaccionService.toResponse(transaccion));
     }
 
     @GetMapping("/user/{userId}")
     @Operation(summary = "Obtener transacciones de un usuario")
-    public ResponseEntity<List<TransaccionDTO.Response>> getTransaccionesByUser(@PathVariable Integer userId) {
+    public ResponseEntity<List<TransaccionDTO.Response>> getTransaccionesByUser(@PathVariable String userId) {
         List<TransaccionDTO.Response> transacciones = transaccionService.getTransaccionesByUser(userId);
         return ResponseEntity.ok(transacciones);
     }
@@ -39,9 +39,9 @@ public class TransaccionController {
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar transacción")
     public ResponseEntity<TransaccionDTO.Response> updateTransaccion(
-            @PathVariable Integer id,
+            @PathVariable String id,
             @Valid @RequestBody TransaccionDTO.UpdateRequest request,
-            @RequestHeader("User-Id") Integer userId) {
+            @RequestHeader("User-Id") String userId) {
         Transaccion transaccion = transaccionService.updateTransaccion(id, request, userId);
         return ResponseEntity.ok(transaccionService.toResponse(transaccion));
     }
@@ -49,8 +49,8 @@ public class TransaccionController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar transacción")
     public ResponseEntity<Void> deleteTransaccion(
-            @PathVariable Integer id,
-            @RequestHeader("User-Id") Integer userId) {
+            @PathVariable String id,
+            @RequestHeader("User-Id") String userId) {
         transaccionService.deleteTransaccion(id, userId);
         return ResponseEntity.noContent().build();
     }

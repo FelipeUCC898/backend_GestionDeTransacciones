@@ -4,6 +4,7 @@ import com.expenses.app.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -29,11 +30,11 @@ import java.util.List;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
-    
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
-    
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -41,10 +42,13 @@ public class SecurityConfiguration {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Permitir todas las preflight OPTIONS
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // Rutas públicas
                 .requestMatchers(
                     "/",
                     "/api/users/register",
-                    "/api/users/login", 
+                    "/api/users/login",
                     "/api/health",
                     "/swagger-ui/**",
                     "/swagger-ui.html",
@@ -60,31 +64,28 @@ public class SecurityConfiguration {
             )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        
-        // Configuración especial para H2 Console
+
+        // Habilitar frameOptions para H2 console (si usas)
         http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
-        
+
         return http.build();
     }
-    
+
     @Bean
-        public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-        "https://tu-frontend-en-vercel.vercel.app", // Reemplaza con tu dominio de Vercel
-        "http://localhost:5173" // Para desarrollo local
-        ));
+        // Para desarrollo/producción puedes especificar orígenes concretos en vez de "*"
+        configuration.addAllowedOriginPattern("*");
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "User-Id", "Cache-Control"));
-        configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-}
+    }
 
-    
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -92,7 +93,7 @@ public class SecurityConfiguration {
         authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
-    
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

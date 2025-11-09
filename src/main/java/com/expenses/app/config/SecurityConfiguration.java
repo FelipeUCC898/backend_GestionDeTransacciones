@@ -68,18 +68,22 @@ public class SecurityConfiguration {
     }
     
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+        public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOriginPattern("*"); // ✅ Permite cualquier dominio
+        configuration.setAllowedOrigins(List.of(
+        "https://tu-frontend-en-vercel.vercel.app", // Reemplaza con tu dominio de Vercel
+        "http://localhost:5173" // Para desarrollo local
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "User-Id", "Cache-Control"));
+        configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(List.of("Authorization"));
-        configuration.setAllowCredentials(true); // ✅ Permite cookies y headers personalizados
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
+}
+
     
     @Bean
     public AuthenticationProvider authenticationProvider() {

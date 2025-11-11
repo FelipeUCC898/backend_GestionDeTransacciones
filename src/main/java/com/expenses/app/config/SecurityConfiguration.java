@@ -81,12 +81,10 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Orígenes permitidos específicos (NO usar wildcard "*" con allowCredentials)
-        configuration.setAllowedOrigins(Arrays.asList(
-            "https://frontendgestiondetransacciones.vercel.app",
-            "http://localhost:5173",
-            "http://localhost:3000"  // Por si usas otro puerto local
-        ));
+        // Permitir CUALQUIER origen (para proyecto público/demo)
+        // Usa setAllowedOriginPatterns en lugar de setAllowedOrigins
+        // para permitir wildcard (*) con allowCredentials(true)
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*")); // Permite todos los headers

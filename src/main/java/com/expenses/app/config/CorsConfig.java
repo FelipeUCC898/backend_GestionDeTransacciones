@@ -20,13 +20,10 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         
-        // Orígenes específicos permitidos
-        config.setAllowedOrigins(Arrays.asList(
-            "https://frontendgestiondetransacciones.vercel.app",
-            "http://localhost:5173",
-            "http://localhost:3000",
-            "http://localhost:5174" // Por si Vite usa otro puerto
-        ));
+        // Permitir CUALQUIER origen (para proyecto público/demo)
+        // Usa setAllowedOriginPatterns en lugar de setAllowedOrigins
+        // para permitir wildcard (*) con allowCredentials(true)
+        config.setAllowedOriginPatterns(Arrays.asList("*"));
         
         // Métodos HTTP permitidos
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));

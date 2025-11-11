@@ -37,13 +37,17 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            // Habilitar CORS (el CorsFilter de CorsConfig.java se ejecutará primero)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            // Deshabilitar CSRF (API REST stateless)
             .csrf(AbstractHttpConfigurer::disable)
+            // Sesiones stateless (JWT)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            // Configurar autorización de requests
             .authorizeHttpRequests(auth -> auth
-                // Permitir todas las preflight OPTIONS
+                // Permitir todas las preflight OPTIONS sin autenticación
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // Rutas públicas
+                // Rutas públicas que NO requieren autenticación
                 .requestMatchers(
                     "/",
                     "/api/users/register",
@@ -59,9 +63,12 @@ public class SecurityConfiguration {
                     "/h2-console/**",
                     "/h2-console"
                 ).permitAll()
+                // Todas las demás rutas requieren autenticación
                 .anyRequest().authenticated()
             )
+            // Proveedor de autenticación (UserDetailsService + PasswordEncoder)
             .authenticationProvider(authenticationProvider())
+            // Agregar filtro JWT antes del filtro de autenticación de usuario/contraseña
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         // Habilitar frameOptions para H2 console (si usas)
